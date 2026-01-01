@@ -42,8 +42,7 @@ void AeolusAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
 }
 
 juce::AudioProcessorEditor* AeolusAudioProcessor::createEditor() {
-    // We will fix the Editor class name in the next step
-    return nullptr; 
+    return new AeolusAudioProcessorEditor(*this);
 }
 
 // Mandatory JUCE requirement: this function must be implemented

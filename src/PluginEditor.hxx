@@ -1,15 +1,15 @@
 #pragma once
 #include <JuceHeader.h>
-#include "FragmentAudioProcessor.h"
+#include "PluginProcessor.hxx"
 #include "../DSP/FileLoader.hxx"
 #include "../UI/WaveformComponent.hxx"
 
-class FragmentAudioProcessorEditor : public juce::AudioProcessorEditor,
+class AeolusAudioProcessorEditor : public juce::AudioProcessorEditor,
                                      public juce::FileDragAndDropTarget
 {
 public:
     // Constructor
-    FragmentAudioProcessorEditor(FragmentAudioProcessor& p)
+    AeolusAudioProcessorEditor(FragmentAudioProcessor& p)
         : juce::AudioProcessorEditor(&p), processor(p),
           waveformVisualizer(processor.getFormatManager())
     {
