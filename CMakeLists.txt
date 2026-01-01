@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 # Project metadata
-project(Aeolus VERSION 0.1.0 LANGUAGES CXX)
+project(Aeolus VERSION 0.1.0 LANGUAGES C CXX)
 
 # Enable C++23 for latest features (std::expected, std::span improvements)
 set(CMAKE_CXX_STANDARD 23)
@@ -18,7 +18,7 @@ FetchContent_MakeAvailable(juce)
 
 # 2. Create the Plugin
 juce_add_plugin(Aeolus
-    COMPANY_NAME "YourName"
+    COMPANY_NAME "josura"
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
@@ -29,8 +29,8 @@ juce_add_plugin(Aeolus
 
 # 3. Source Files
 target_sources(Aeolus PRIVATE
-    src/PluginProcessor.cpp
-    src/PluginEditor.cpp
+    src/PluginProcessor.cxx
+    src/PluginEditor.cxx
 )
 
 # 4. Links and Dependencies
