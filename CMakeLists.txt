@@ -12,6 +12,7 @@ if(UNIX AND NOT APPLE)
     find_package(PkgConfig REQUIRED)
     
     # IMPORTED_TARGET is required for each module to create the PkgConfig::<PREFIX> target
+    pkg_check_modules(CURL REQUIRED IMPORTED_TARGET libcurl)
     pkg_check_modules(WEBKIT REQUIRED IMPORTED_TARGET webkit2gtk-4.1)
     pkg_check_modules(GTK3 REQUIRED IMPORTED_TARGET gtk+-3.0)
     pkg_check_modules(ALSA REQUIRED IMPORTED_TARGET alsa)
@@ -66,6 +67,7 @@ if(UNIX AND NOT APPLE)
         PkgConfig::GTK3 
         PkgConfig::ALSA 
         PkgConfig::FREETYPE
+        PkgConfig::CURL
     )
 endif()
 

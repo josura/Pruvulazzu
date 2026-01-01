@@ -21,3 +21,4 @@ Aeolus/
 - ALSA development libraries (Linux)
 - freetype2 development libraries (Linux)
 - sound2 development libraries
+- curl
