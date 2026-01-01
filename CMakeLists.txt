@@ -22,6 +22,7 @@ if(UNIX AND NOT APPLE)
     message(STATUS "GTK3 found: ${GTK3_VERSION}")
     message(STATUS "ALSA found: ${ALSA_VERSION}")
     message(STATUS "Freetype found: ${FREETYPE_VERSION}")
+    message(STATUS "cURL found: ${CURL_VERSION}")
 endif()
 
 # 1. Fetch JUCE
@@ -43,6 +44,10 @@ juce_add_plugin(Aeolus
     FORMATS VST3 LV2 
     PRODUCT_NAME "Aeolus"
     LV2URI "https://josura.com/plugins/aeolus" # To be changed later to actual URI 
+)
+
+target_compile_definitions(Aeolus PRIVATE
+    JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
 # 3. Source Files
