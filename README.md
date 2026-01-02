@@ -2,6 +2,7 @@
 Granular sampler plugin implemented in C++ and Juce. Support both LV2 and VST. Under production
 
 ## Project Structure
+```
 Aeolus/
 ├── CMakeLists.txt        # Main build script
 ├── src/               # All C++ code
@@ -13,6 +14,7 @@ Aeolus/
 ├── tests/                # Unit tests (Catch2 or GTest)
 ├── modules/              # Git submodules (like JUCE)
 └── resources/            # Icons, fonts, and assets
+```
 
 ## Requirements
 - CMake 3.15+
