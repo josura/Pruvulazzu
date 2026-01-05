@@ -18,6 +18,7 @@ public:
     void filesDropped(const juce::StringArray&, int, int) override;
 
 private:
+    juce::TextButton testButton { "Test Grain" };
     AeolusAudioProcessor& processor;
     WaveformComponent waveformVisualizer;
     FileLoader loader;
