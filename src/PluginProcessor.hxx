@@ -30,6 +30,8 @@ public:
     void getStateInformation (juce::MemoryBlock&) override {}
     void setStateInformation (const void*, int) override {}
 
+    void triggerTestNote() { noteTriggered = true; }
+
     // Helpers for the UI
     SampleManager& getSampleManager() { return sampleManager; }
     juce::AudioFormatManager& getFormatManager() { return formatManager; }
@@ -39,6 +41,7 @@ private:
     juce::AudioFormatManager formatManager;
     int playhead = 0;
     bool isNoteActive = false; // MIDI triggering flag
+    std::atomic<bool> noteTriggered { false }; // For test note triggering
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessor)
 };

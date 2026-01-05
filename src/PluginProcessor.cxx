@@ -16,6 +16,13 @@ void AeolusAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
 {
     juce::ScopedNoDenormals noDenormals;
 
+    // Check if a test note has been triggered from the UI
+    if (noteTriggered.exchange(false))
+    {
+        // Inject a MIDI Note On (Note 60, Velocity 1.0) into the buffer
+        midiMessages.addEvent(juce::MidiMessage::noteOn(1, 60, 1.0f), 0);
+    }
+
     // Handle MIDI
     for (const auto metadata : midiMessages) {
         auto msg = metadata.getMessage();
