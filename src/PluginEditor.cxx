@@ -5,7 +5,14 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor(AeolusAudioProcessor& p)
       waveformVisualizer(processor.getFormatManager())
 {
     setSize(600, 400);
+    addAndMakeVisible(testButton);
     addAndMakeVisible(waveformVisualizer);
+
+    // When clicked, tell the processor to trigger a note
+    testButton.onClick = [this] { 
+        processor.triggerTestNote(); 
+    };
+    
 }
 
 AeolusAudioProcessorEditor::~AeolusAudioProcessorEditor() {}
@@ -15,7 +22,19 @@ void AeolusAudioProcessorEditor::paint(juce::Graphics& g) {
 }
 
 void AeolusAudioProcessorEditor::resized() {
-    waveformVisualizer.setBounds(getLocalBounds().reduced(20));
+    // Define the main boundary with some padding
+    auto bounds = getLocalBounds().reduced(20);
+    
+    // Split the vertical space: 
+    // Bottom 50 pixels for buttons/controls
+    auto controlArea = bounds.removeFromBottom(50);
+    
+    // The rest of the top area goes to the waveform
+    waveformVisualizer.setBounds(bounds);
+    
+    // Position the test button in the bottom right of the control area
+    // We center it vertically within that 50px slice
+    testButton.setBounds(controlArea.removeFromRight(120).withSizeKeepingCentre(100, 30));
 }
 
 bool AeolusAudioProcessorEditor::isInterestedInFileDrag(const juce::StringArray&) { return true; }
