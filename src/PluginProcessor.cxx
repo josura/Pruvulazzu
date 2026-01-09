@@ -1,18 +1,18 @@
 #include "PluginProcessor.hxx"
 #include "PluginEditor.hxx"
 
-AeolusAudioProcessor::AeolusAudioProcessor() 
+PruvulazzuAudioProcessor::PruvulazzuAudioProcessor() 
     : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true))
 {
     formatManager.registerBasicFormats();
 }
 
-AeolusAudioProcessor::~AeolusAudioProcessor() {}
+PruvulazzuAudioProcessor::~PruvulazzuAudioProcessor() {}
 
-void AeolusAudioProcessor::prepareToPlay (double, int) { playhead = 0; }
-void AeolusAudioProcessor::releaseResources() {}
+void PruvulazzuAudioProcessor::prepareToPlay (double, int) { playhead = 0; }
+void PruvulazzuAudioProcessor::releaseResources() {}
 
-void AeolusAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
 
@@ -55,11 +55,11 @@ void AeolusAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     }
 }
 
-juce::AudioProcessorEditor* AeolusAudioProcessor::createEditor() {
-    return new AeolusAudioProcessorEditor(*this);
+juce::AudioProcessorEditor* PruvulazzuAudioProcessor::createEditor() {
+    return new PruvulazzuAudioProcessorEditor(*this);
 }
 
 // Mandatory JUCE requirement: this function must be implemented
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
-    return new AeolusAudioProcessor();
+    return new PruvulazzuAudioProcessor();
 }

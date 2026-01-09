@@ -1,6 +1,6 @@
 #include "PluginEditor.hxx"
 
-AeolusAudioProcessorEditor::AeolusAudioProcessorEditor(AeolusAudioProcessor& p)
+PruvulazzuAudioProcessorEditor::PruvulazzuAudioProcessorEditor(PruvulazzuAudioProcessor& p)
     : AudioProcessorEditor(&p), processor(p),
       waveformVisualizer(processor.getFormatManager())
 {
@@ -15,13 +15,13 @@ AeolusAudioProcessorEditor::AeolusAudioProcessorEditor(AeolusAudioProcessor& p)
     
 }
 
-AeolusAudioProcessorEditor::~AeolusAudioProcessorEditor() {}
+PruvulazzuAudioProcessorEditor::~PruvulazzuAudioProcessorEditor() {}
 
-void AeolusAudioProcessorEditor::paint(juce::Graphics& g) {
+void PruvulazzuAudioProcessorEditor::paint(juce::Graphics& g) {
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 
-void AeolusAudioProcessorEditor::resized() {
+void PruvulazzuAudioProcessorEditor::resized() {
     // Define the main boundary with some padding
     auto bounds = getLocalBounds().reduced(20);
     
@@ -37,9 +37,9 @@ void AeolusAudioProcessorEditor::resized() {
     testButton.setBounds(controlArea.removeFromRight(120).withSizeKeepingCentre(100, 30));
 }
 
-bool AeolusAudioProcessorEditor::isInterestedInFileDrag(const juce::StringArray&) { return true; }
+bool PruvulazzuAudioProcessorEditor::isInterestedInFileDrag(const juce::StringArray&) { return true; }
 
-void AeolusAudioProcessorEditor::filesDropped(const juce::StringArray& files, int, int) {
+void PruvulazzuAudioProcessorEditor::filesDropped(const juce::StringArray& files, int, int) {
     juce::File file(files[0]);
     waveformVisualizer.setFile(file);
     auto newBuffer = loader.loadFile(file);

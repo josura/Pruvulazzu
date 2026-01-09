@@ -4,12 +4,12 @@
 #include "DSP/FileLoader.hxx"
 #include "UI/WaveformComponent.hxx"
 
-class AeolusAudioProcessorEditor : public juce::AudioProcessorEditor,
+class PruvulazzuAudioProcessorEditor : public juce::AudioProcessorEditor,
                                    public juce::FileDragAndDropTarget
 {
 public:
-    AeolusAudioProcessorEditor(AeolusAudioProcessor&);
-    ~AeolusAudioProcessorEditor() override;
+    PruvulazzuAudioProcessorEditor(PruvulazzuAudioProcessor&);
+    ~PruvulazzuAudioProcessorEditor() override;
 
     void paint(juce::Graphics&) override;
     void resized() override;
@@ -19,9 +19,9 @@ public:
 
 private:
     juce::TextButton testButton { "Test" };
-    AeolusAudioProcessor& processor;
+    PruvulazzuAudioProcessor& processor;
     WaveformComponent waveformVisualizer;
     FileLoader loader;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PruvulazzuAudioProcessorEditor)
 };

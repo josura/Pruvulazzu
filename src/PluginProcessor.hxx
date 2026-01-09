@@ -4,11 +4,11 @@
 #include "DSP/SampleManager.hxx"
 #include "DSP/Envelopes.hxx"
 
-class AeolusAudioProcessor : public juce::AudioProcessor
+class PruvulazzuAudioProcessor : public juce::AudioProcessor
 {
 public:
-    AeolusAudioProcessor();
-    ~AeolusAudioProcessor() override;
+    PruvulazzuAudioProcessor();
+    ~PruvulazzuAudioProcessor() override;
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -17,7 +17,7 @@ public:
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
 
-    const juce::String getName() const override { return "Aeolus"; }
+    const juce::String getName() const override { return "Pruvulazzu"; }
     bool acceptsMidi() const override { return true; }
     bool producesMidi() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
@@ -45,5 +45,5 @@ private:
     std::atomic<bool> noteTriggered { false }; // For test note triggering
     std::unique_ptr<Envelope> activeEnvelope = std::make_unique<ParabolicEnvelope>(); // Example envelope
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AeolusAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PruvulazzuAudioProcessor)
 };
