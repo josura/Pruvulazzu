@@ -1,10 +1,14 @@
-# Aeolus
+# Pruvulazzu
 Granular sampler plugin implemented in C++ and Juce. Support both LV2 and VST. Under production
+
 Drag and drop samples to play them granually.
+
+## Name origin
+Pruvulazzu means "dust" or "small particles" in sicilian. The sicilian undertones of this plugin will probably be coded as well in the UI in the future.
 
 ## Project Structure
 ```
-Aeolus/
+Pruvulazzu/
 ├── CMakeLists.txt        # Main build script
 ├── src/               # All C++ code
 │   ├── PluginProcessor.cpp
