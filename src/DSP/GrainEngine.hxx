@@ -3,9 +3,6 @@
 #include "Grain.hxx"
 #include "SampleBufferData.hxx"
 
-struct GrainSnapshot {
-    std::vector<float> positions;
-};
 
 class GrainEngine {
 public:
@@ -25,13 +22,13 @@ public:
         }
     }
 
-    GrainSnapshot getActivePositions(int totalSampleLength) const {
-        GrainSnapshot snapshot;
+    std::vector<float> getActivePositions(int totalSampleLength) const {
+        std::vector<float> positions;
         for (const auto& grain : grainPool) {
             float pos = grain.getNormalizedPosition(totalSampleLength);
-            if (pos >= 0.0f) snapshot.positions.push_back(pos);
+            if (pos >= 0.0f) positions.push_back(pos);
         }
-        return snapshot;
+        return positions;
     }
 
     void process(juce::AudioBuffer<float>& outputBuffer, const SampleBufferData::Ptr& sampleData) {
