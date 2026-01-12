@@ -37,6 +37,12 @@ void PruvulazzuAudioProcessorEditor::resized() {
     testButton.setBounds(controlArea.removeFromRight(120).withSizeKeepingCentre(100, 30));
 }
 
+void PruvulazzuAudioProcessorEditor::timerCallback(){
+        // Get positions from processor
+        auto positions = processor.getActiveGrainPositions();
+        waveformVisualizer.setPlayheads(positions);
+    }
+
 bool PruvulazzuAudioProcessorEditor::isInterestedInFileDrag(const juce::StringArray&) { return true; }
 
 void PruvulazzuAudioProcessorEditor::filesDropped(const juce::StringArray& files, int, int) {

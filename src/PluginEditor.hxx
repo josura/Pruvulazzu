@@ -5,7 +5,8 @@
 #include "UI/WaveformComponent.hxx"
 
 class PruvulazzuAudioProcessorEditor : public juce::AudioProcessorEditor,
-                                   public juce::FileDragAndDropTarget
+                                   public juce::FileDragAndDropTarget,
+                                   public juce::Timer
 {
 public:
     PruvulazzuAudioProcessorEditor(PruvulazzuAudioProcessor&);
@@ -16,6 +17,10 @@ public:
 
     bool isInterestedInFileDrag(const juce::StringArray&) override;
     void filesDropped(const juce::StringArray&, int, int) override;
+    /**
+     * @brief Timer callback to update playhead positions
+     */
+    void timerCallback() override;
 
 private:
     juce::TextButton testButton { "Test" };
