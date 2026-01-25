@@ -43,6 +43,6 @@ make
 - [ ] Improve UI/UX design
 - [ ] Add more sample formats support
 - [ ] Write unit tests
-- [ ] Documentation
+- [x] Documentation
 - [ ] Grain logic optimization and improvements
 - [ ] Better visualization of grains in the waveform display (maybe small windows or clear markers)
