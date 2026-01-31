@@ -46,6 +46,10 @@ private:
     int playhead = 0;
     bool isNoteActive = false; // MIDI triggering flag
     std::atomic<bool> noteTriggered { false }; // For test note triggering
+    // Scheduler variables
+    int samplesSinceLastGrain = 0;
+    int grainIntervalSamples = 4410; // Trigger a new grain every ~100ms at 44.1k
+    // DSP Components
     std::unique_ptr<Envelope> activeEnvelope = std::make_unique<ParabolicEnvelope>(); // Example envelope
     GrainEngine grainEngine;
     std::atomic<float> currentPlayheadPos { -1.0f }; // 0.0 to 1.0 for UI
