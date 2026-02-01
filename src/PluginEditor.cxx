@@ -37,11 +37,12 @@ void PruvulazzuAudioProcessorEditor::resized() {
     testButton.setBounds(controlArea.removeFromRight(120).withSizeKeepingCentre(100, 30));
 }
 
-void PruvulazzuAudioProcessorEditor::timerCallback(){
-        // Get positions from processor
-        auto positions = processor.getActiveGrainPositions();
-        waveformVisualizer.setPlayheads(positions);
-    }
+void PruvulazzuAudioProcessorEditor::timerCallback() {
+    auto currentData = processor.getSampleManager().getCurrentBuffer();
+    int totalLen = (currentData != nullptr) ? currentData->getBuffer().getNumSamples() : 0;
+    // We need a helper in Processor to get the positions from grainEngine
+    waveformVisualizer.setPlayheads(processor.getActiveGrainPositions());
+}
 
 bool PruvulazzuAudioProcessorEditor::isInterestedInFileDrag(const juce::StringArray&) { return true; }
 
