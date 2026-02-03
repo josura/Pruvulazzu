@@ -9,6 +9,7 @@ public:
     // Returns normalized position (0.0 to 1.0) within the source buffer
     float getNormalizedPosition(int sourceLength) const {
         if (!active || sourceLength <= 0) return -1.0f;
+        // Calculate the current read position in the source buffer
         return static_cast<float>((startSample + currentSample) % sourceLength) / sourceLength;
     }
 
