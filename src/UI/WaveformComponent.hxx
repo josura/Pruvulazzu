@@ -33,14 +33,15 @@ public:
         // Draw Waveform (Existing code)
         g.fillAll(juce::Colours::black);
         g.setColour(juce::Colours::cyan.withAlpha(0.8f)); // Slightly transparent for layering
-        if( thumbnail.getNumChannels() > 0 ){
+        if (thumbnail.getNumChannels() > 0){
             thumbnail.drawChannels(g, getLocalBounds(), 0.0, thumbnail.getTotalLength(), 1.0f);
         } else {
             g.drawText("Drop an audio file here", getLocalBounds(), juce::Justification::centred);
         }
 
         // Draw the "Dust" (Multiple Playheads), to be tested
-        g.setColour(juce::Colours::white.withAlpha(0.6f)); // Semi-transparent
+        // g.setColour(juce::Colours::white.withAlpha(0.6f)); // Semi-transparent
+        g.setColour(juce::Colours::white); // Opaque for testing
         for (float pos : currentPositions) {
             auto x = pos * getWidth();
             g.drawLine(x, 0, x, getHeight(), 1.5f);  //thicker line for visibility, TODO should be adjusted later as needed
