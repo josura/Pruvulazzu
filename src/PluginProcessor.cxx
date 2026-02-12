@@ -2,7 +2,11 @@
 #include "PluginEditor.hxx"
 
 PruvulazzuAudioProcessor::PruvulazzuAudioProcessor() 
-    : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true))
+    : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
+      apvts (*this, nullptr, "Parameters", {
+          std::make_unique<juce::AudioParameterFloat> ("density", "Density", 10.0f, 1000.0f, 100.0f),
+          std::make_unique<juce::AudioParameterFloat> ("size", "Grain Size", 10.0f, 500.0f, 100.0f)
+      })
 {
     formatManager.registerBasicFormats();
 }
@@ -97,40 +101,27 @@ std::vector<float> PruvulazzuAudioProcessor::getActiveGrainPositions() const  {
 // }
 
 void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
-    juce::ScopedNoDenormals noDenormals;
     buffer.clear();
-
     auto currentData = sampleManager.getCurrentBuffer();
     if (currentData == nullptr) return;
 
-    // Check if a test note has been triggered from the UI
-    if (noteTriggered.exchange(false)) {
-        // Inject a MIDI Note On (Note 60, Velocity 1.0) into the buffer
-        midiMessages.addEvent(juce::MidiMessage::noteOn(1, 60, 1.0f), 0);
-    }
-
-    // Handle MIDI & Scheduler
-    for (const auto metadata : midiMessages) {
-        auto msg = metadata.getMessage();
-        if (msg.isNoteOn()) {
-            isNoteActive = true;
-            samplesSinceLastGrain = grainIntervalSamples; // Force immediate trigger
-        } else if (msg.isNoteOff()) isNoteActive = false;
-    }
+    // Handle Test Note Trigger
+    if (noteTriggered.exchange(false)) isNoteActive = true;
 
     if (isNoteActive) {
+        float density = *apvts.getRawParameterValue("density");
+        int intervalSamples = static_cast<int>(getSampleRate() / (density / 1000.0f));
+        
         samplesSinceLastGrain += buffer.getNumSamples();
-        if (samplesSinceLastGrain >= grainIntervalSamples) {
-            int totalLen = currentData->getBuffer().getNumSamples();
-            // Generalization: To act as a singular sampler, trigger one grain 
-            // starting at 0 with the full buffer length.
-            int start = juce::Random::getSystemRandom().nextInt(totalLen);
-            int len = 8820; // 200ms grains
-            grainEngine.triggerGrain(start, len, juce::Random::getSystemRandom().nextFloat(), activeEnvelope.get());
+        if (samplesSinceLastGrain >= intervalSamples) {
+            float sizeMs = *apvts.getRawParameterValue("size");
+            int len = static_cast<int>((sizeMs / 1000.0f) * getSampleRate());
+            int start = juce::Random::getSystemRandom().nextInt(currentData->getBuffer().getNumSamples());
+            
+            grainEngine.triggerGrain(start, len, 0.5f, activeEnvelope.get());
             samplesSinceLastGrain = 0;
         }
     }
-
     grainEngine.process(buffer, currentData);
 }
 
