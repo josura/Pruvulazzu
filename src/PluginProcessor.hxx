@@ -21,6 +21,9 @@ public:
      * Default parameters include "density" for grain density and "size" for grain size, both of which can be adjusted by the user.
      */
     PruvulazzuAudioProcessor();
+    /**
+     * Destructor of the PruvulazzuAudioProcessor. Cleans up any resources used by the processor.
+     */
     ~PruvulazzuAudioProcessor() override;
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
