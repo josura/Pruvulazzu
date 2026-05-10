@@ -8,13 +8,23 @@ PruvulazzuAudioProcessorEditor::PruvulazzuAudioProcessorEditor(PruvulazzuAudioPr
     addAndMakeVisible(testButton);
     addAndMakeVisible(waveformVisualizer);
 
-    // When clicked, tell the processor to trigger a note
+    // Setup Density Knob
+    densitySlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    densitySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    addAndMakeVisible(densitySlider);
+    densityAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts, "density", densitySlider);
+
+    // Setup Size Knob
+    sizeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    addAndMakeVisible(sizeSlider);
+    sizeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts, "size", sizeSlider);
+
     testButton.onClick = [this] { 
         processor.triggerTestNote(); 
     };
 
-    startTimerHz(60); // Update playhead positions at 60 FPS
-    
+    startTimerHz(60);
 }
 
 PruvulazzuAudioProcessorEditor::~PruvulazzuAudioProcessorEditor() {}
@@ -23,20 +33,22 @@ void PruvulazzuAudioProcessorEditor::paint(juce::Graphics& g) {
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 
+// Replace your resized() function:
 void PruvulazzuAudioProcessorEditor::resized() {
-    // Define the main boundary with some padding
-    auto bounds = getLocalBounds().reduced(20);
+    auto bounds = getLocalBounds().reduced(10);
     
-    // Split the vertical space: 
-    // Bottom 50 pixels for buttons/controls
-    auto controlArea = bounds.removeFromBottom(50);
+    // Bottom 80 pixels for controls
+    auto controlArea = bounds.removeFromBottom(80);
+    bounds.removeFromBottom(10); // Spacing between waveform and controls
     
-    // The rest of the top area goes to the waveform
     waveformVisualizer.setBounds(bounds);
     
-    // Position the test button in the bottom right of the control area
-    // We center it vertically within that 50px slice
-    testButton.setBounds(controlArea.removeFromRight(120).withSizeKeepingCentre(100, 30));
+    // Layout controls horizontally
+    int knobWidth = 80;
+    densitySlider.setBounds(controlArea.removeFromLeft(knobWidth));
+    sizeSlider.setBounds(controlArea.removeFromLeft(knobWidth));
+    
+    testButton.setBounds(controlArea.removeFromRight(100).withSizeKeepingCentre(100, 40));
 }
 
 void PruvulazzuAudioProcessorEditor::timerCallback() {

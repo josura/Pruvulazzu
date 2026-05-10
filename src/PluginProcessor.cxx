@@ -9,8 +9,8 @@
 PruvulazzuAudioProcessor::PruvulazzuAudioProcessor() 
     : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
       apvts (*this, nullptr, "Parameters", {
-          std::make_unique<juce::AudioParameterFloat> ("density", "Density", 10.0f, 1000.0f, 100.0f),
-          std::make_unique<juce::AudioParameterFloat> ("size", "Grain Size", 10.0f, 500.0f, 100.0f)
+          std::make_unique<juce::AudioParameterFloat> ("density", "Density (Hz)", 1.0f, 100.0f, 20.0f),
+          std::make_unique<juce::AudioParameterFloat> ("size", "Grain Size (ms)", 10.0f, 1000.0f, 150.0f)
       })
 {
     formatManager.registerBasicFormats();
@@ -27,106 +27,57 @@ void PruvulazzuAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
 void PruvulazzuAudioProcessor::releaseResources() {}
 
-// void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
-// {
-//     juce::ScopedNoDenormals noDenormals;
-
-//     // Check if a test note has been triggered from the UI
-//     if (noteTriggered.exchange(false))
-//     {
-//         // Inject a MIDI Note On (Note 60, Velocity 1.0) into the buffer
-//         midiMessages.addEvent(juce::MidiMessage::noteOn(1, 60, 1.0f), 0);
-//     }
-
-//     // Handle MIDI
-//     for (const auto metadata : midiMessages) {
-//         auto msg = metadata.getMessage();
-//         if (msg.isNoteOn()) {
-//             playhead = 0;
-//             isNoteActive = true;
-//         } else if (msg.isNoteOff()) {
-//             isNoteActive = false;
-//         }
-//     }
-
-//     buffer.clear();
-//     if (!isNoteActive) return;
-
-//     auto currentData = sampleManager.getCurrentBuffer();
-//     if (currentData == nullptr) return;
-
-//     const auto& sampleBuffer = currentData->getBuffer();
-//     auto* leftOut = buffer.getWritePointer(0);
-//     auto* rightOut = buffer.getWritePointer(1);
-//     const auto* sampleIn = sampleBuffer.getReadPointer(0);
-
-//     for (int i = 0; i < buffer.getNumSamples(); ++i) {
-//         if (playhead < sampleBuffer.getNumSamples()) {
-//             float sample = sampleIn[playhead];
-//             leftOut[i] += sample;
-//             if (buffer.getNumChannels() > 1) rightOut[i] += sample;
-//             playhead++;
-//         }
-//     }
-// }
-
 std::vector<float> PruvulazzuAudioProcessor::getActiveGrainPositions() const  {
     auto currentData = sampleManager.getCurrentBuffer();
     int totalLen = (currentData != nullptr) ? currentData->getBuffer().getNumSamples() : 0;
     return grainEngine.getActivePositions(totalLen);
 }
 
-// void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
-//     juce::ScopedNoDenormals noDenormals;
-//     buffer.clear();
-
-//     auto currentData = sampleManager.getCurrentBuffer();
-//     if (currentData == nullptr) return;
-
-//     // Check if a test note has been triggered from the UI
-//     if (noteTriggered.exchange(false)) {
-//         // Inject a MIDI Note On (Note 60, Velocity 1.0) into the buffer
-//         midiMessages.addEvent(juce::MidiMessage::noteOn(1, 60, 1.0f), 0);
-//     }
-
-//     // Handle MIDI triggers
-//     for (const auto metadata : midiMessages) {
-//         auto msg = metadata.getMessage();
-//         if (msg.isNoteOn()) {
-//             // "Generalization": Trigger the sample as one large grain
-//             grainEngine.triggerGrain(0, currentData->getBuffer().getNumSamples(), 0.5f, activeEnvelope.get());
-//         }
-//     }
-
-//     // Process all active grains
-//     grainEngine.process(buffer, currentData);
-    
-//     // Update playhead for UI (simplified to track the last triggered grain or engine state)
-//     // For now, we'll keep this simple; in a full engine, you'd track the oldest active grain
-// }
 
 void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
     buffer.clear();
     auto currentData = sampleManager.getCurrentBuffer();
     if (currentData == nullptr) return;
 
-    // Handle Test Note Trigger
-    if (noteTriggered.exchange(false)) isNoteActive = true;
+    int totalSamples = currentData->getBuffer().getNumSamples();
 
+    // 1. TEST BUTTON LOGIC: One Macro Grain
+    if (noteTriggered.exchange(false)) {
+        // Play the entire sample as one singular grain
+        grainEngine.triggerGrain(0, totalSamples, 0.5f, activeEnvelope.get());
+    }
+
+    // 2. MIDI LOGIC: Turn granular cloud on/off
+    for (const auto metadata : midiMessages) {
+        auto msg = metadata.getMessage();
+        if (msg.isNoteOn()) isNoteActive = true;
+        else if (msg.isNoteOff()) isNoteActive = false;
+    }
+
+    // 3. GRANULAR SCHEDULER
     if (isNoteActive) {
-        float density = *apvts.getRawParameterValue("density");
-        int intervalSamples = static_cast<int>(getSampleRate() / (density / 1000.0f));
+        float density = apvts.getRawParameterValue("density")->load();
+        
+        // Fix: Density is grains per second. Interval = SampleRate / Density
+        int intervalSamples = static_cast<int>(getSampleRate() / density);
         
         samplesSinceLastGrain += buffer.getNumSamples();
         if (samplesSinceLastGrain >= intervalSamples) {
-            float sizeMs = *apvts.getRawParameterValue("size");
+            float sizeMs = apvts.getRawParameterValue("size")->load();
             int len = static_cast<int>((sizeMs / 1000.0f) * getSampleRate());
-            int start = juce::Random::getSystemRandom().nextInt(currentData->getBuffer().getNumSamples());
+            
+            // Ensure grain doesn't exceed sample boundaries
+            if (len > totalSamples) len = totalSamples;
+            int start = 0;
+            if (totalSamples > len) {
+                start = juce::Random::getSystemRandom().nextInt(totalSamples - len);
+            }
             
             grainEngine.triggerGrain(start, len, 0.5f, activeEnvelope.get());
-            samplesSinceLastGrain = 0;
+            samplesSinceLastGrain -= intervalSamples; // Subtract instead of reset to 0 to keep precise timing
         }
     }
+
     grainEngine.process(buffer, currentData);
 }
 

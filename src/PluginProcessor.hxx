@@ -16,6 +16,7 @@
 class PruvulazzuAudioProcessor : public juce::AudioProcessor
 {
 public:
+    juce::AudioProcessorValueTreeState apvts; // For parameter management
     /**
      * Constructor of the PruvulazzuAudioProcessor. Initializes the audio processor and sets up parameters.
      * Default parameters include "density" for grain density and "size" for grain size, both of which can be adjusted by the user.
@@ -67,7 +68,6 @@ private:
     // DSP Components
     std::unique_ptr<Envelope> activeEnvelope = std::make_unique<ParabolicEnvelope>(); // Example envelope
     GrainEngine grainEngine;
-    juce::AudioProcessorValueTreeState apvts; // For parameter management
     std::atomic<float> currentPlayheadPos { -1.0f }; // 0.0 to 1.0 for UI
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PruvulazzuAudioProcessor)

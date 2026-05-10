@@ -28,5 +28,12 @@ private:
     WaveformComponent waveformVisualizer;
     FileLoader loader;
 
+    juce::Slider densitySlider;
+    juce::Slider sizeSlider;
+    
+    // These "Attachments" automatically sync the UI knobs to the processor parameters
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> densityAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sizeAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PruvulazzuAudioProcessorEditor)
 };
