@@ -23,18 +23,33 @@ public:
     }
 
     // Process one sample and return the result
+    // The core DSP logic for a single grain
     float process(const float* sourceData, int sourceLength) {
-        if (!active || currentEnvelope == nullptr) return 0.0f;
+        // 1. Safety Check
+        if (!active || sourceLength <= 0) return 0.0f;
 
-        float envLevel = currentEnvelope->getLevel(currentSample, duration);
+        // 2. Read the raw sample from the circular buffer
         int readPos = (startSample + currentSample) % sourceLength;
-        
-        float out = sourceData[readPos] * envLevel;
+        float rawSample = sourceData[readPos];
 
+        // 3. Calculate the Window Function (Hann Window)
+        // A Hann window equation is: 0.5 * (1 - cos(2 * PI * n / N))
+        // Where 'n' is current position, and 'N' is total length.
+        float windowPhase = static_cast<float>(currentSample) / static_cast<float>(duration - 1);
+        float windowLevel = 0.5f * (1.0f - std::cos(juce::MathConstants<float>::twoPi * windowPhase));
+
+        // 4. Apply the window to the sample
+        float outputSample = rawSample * windowLevel;
+
+        // 5. Advance the playhead for this grain
         currentSample++;
-        if (currentSample >= duration) active = false;
+        
+        // 6. Check if the grain has finished playing
+        if (currentSample >= duration) {
+            active = false;
+        }
 
-        return out;
+        return outputSample;
     }
 
     bool isActive() const { return active; }
@@ -47,5 +62,5 @@ private:
     int currentSampleIndex = 0; // The absolute index in the source buffer
     bool active = false;
     float pan = 0.5f;
-    Envelope* currentEnvelope = nullptr; 
+    Envelope* currentEnvelope = nullptr; // Pointer to the envelope controlling this grain, unused since we are using a fixed Hann window
 };
