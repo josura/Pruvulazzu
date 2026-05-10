@@ -4,25 +4,35 @@ PruvulazzuAudioProcessorEditor::PruvulazzuAudioProcessorEditor(PruvulazzuAudioPr
     : AudioProcessorEditor(&p), processor(p),
       waveformVisualizer(processor.getFormatManager())
 {
-    setSize(600, 400);
+    setSize(800, 600);
     addAndMakeVisible(testButton);
     addAndMakeVisible(waveformVisualizer);
 
-    // Setup Density Knob
+    // --- Density Knob & Label ---
     densitySlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     densitySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     addAndMakeVisible(densitySlider);
     densityAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts, "density", densitySlider);
+    
+    // Setup Density Label
+    densityLabel.setText("Density", juce::dontSendNotification);
+    densityLabel.setJustificationType(juce::Justification::centred);
+    densityLabel.attachToComponent(&densitySlider, false); // false = place above the slider
+    addAndMakeVisible(densityLabel);
 
-    // Setup Size Knob
+    // --- Size Knob & Label ---
     sizeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     addAndMakeVisible(sizeSlider);
     sizeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts, "size", sizeSlider);
+    
+    // Setup Size Label
+    sizeLabel.setText("Size", juce::dontSendNotification);
+    sizeLabel.setJustificationType(juce::Justification::centred);
+    sizeLabel.attachToComponent(&sizeSlider, false); // false = place above the slider
+    addAndMakeVisible(sizeLabel);
 
-    testButton.onClick = [this] { 
-        processor.triggerTestNote(); 
-    };
+    testButton.onClick = [this] { processor.triggerTestNote(); };
 
     startTimerHz(60);
 }

@@ -28,6 +28,9 @@ private:
     WaveformComponent waveformVisualizer;
     FileLoader loader;
 
+    juce::Label densityLabel;
+    juce::Label sizeLabel;
+
     juce::Slider densitySlider;
     juce::Slider sizeSlider;
     
