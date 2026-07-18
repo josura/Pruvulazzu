@@ -1,7 +1,7 @@
 # Pruvulazzu
 Granular sampler plugin implemented in C++ and Juce. Support both LV2 and VST. Under production
 
-Drag and drop samples to play them granually.
+Drag and drop samples to play them granually with MIDI.
 
 ## Name origin
 Pruvulazzu means "dust" or "small particles" in sicilian. The sicilian undertones of this plugin will probably be coded as well in the UI in the future.
@@ -37,3 +37,15 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build . --config Release
 make
 ```
+
+## TODO
+- [ ] Add more DSP features (LFO, Envelopes, etc.)
+- [ ] Improve UI/UX design (Visualization of grains, better controls)
+- [ ] Add more controls for grain parameters (density, spread, etc.)
+- [ ] MIDI learn functionality
+- [ ] Implement preset management system
+- [ ] Add more sample formats support
+- [ ] Write unit tests
+- [x] Documentation
+- [Partial] Grain logic optimization and improvements
+- [Partial] Better visualization of grains in the waveform display (maybe small windows or clear markers)

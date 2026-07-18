@@ -1,13 +1,30 @@
+/**
+ * Pruvulazzu - A JUCE-based granular synthesizer plugin
+ * Copyright (C) 2026  Giorgio Locicero
+ * @brief This file contains the declaration of the main audio processor class for the Pruvulazzu plugin.
+ */
 #pragma once
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_audio_formats/juce_audio_formats.h>
 #include "DSP/SampleManager.hxx"
 #include "DSP/Envelopes.hxx"
+#include "DSP/GrainEngine.hxx"
 
+/**
+ * The main audio processor class for the Pruvulazzu plugin. This class handles audio processing, MIDI events, and parameter management.
+ */
 class PruvulazzuAudioProcessor : public juce::AudioProcessor
 {
 public:
+    juce::AudioProcessorValueTreeState apvts; // For parameter management
+    /**
+     * Constructor of the PruvulazzuAudioProcessor. Initializes the audio processor and sets up parameters.
+     * Default parameters include "density" for grain density and "size" for grain size, both of which can be adjusted by the user.
+     */
     PruvulazzuAudioProcessor();
+    /**
+     * Destructor of the PruvulazzuAudioProcessor. Cleans up any resources used by the processor.
+     */
     ~PruvulazzuAudioProcessor() override;
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -33,6 +50,8 @@ public:
 
     void triggerTestNote() { noteTriggered = true; }
 
+    std::vector<float> getActiveGrainPositions() const;
+
     // Helpers for the UI
     SampleManager& getSampleManager() { return sampleManager; }
     juce::AudioFormatManager& getFormatManager() { return formatManager; }
@@ -43,7 +62,13 @@ private:
     int playhead = 0;
     bool isNoteActive = false; // MIDI triggering flag
     std::atomic<bool> noteTriggered { false }; // For test note triggering
+    // Scheduler variables
+    int samplesSinceLastGrain = 0;
+    int grainIntervalSamples = 4410; // Trigger a new grain every ~100ms at 44.1k
+    // DSP Components
     std::unique_ptr<Envelope> activeEnvelope = std::make_unique<ParabolicEnvelope>(); // Example envelope
+    GrainEngine grainEngine;
+    std::atomic<float> currentPlayheadPos { -1.0f }; // 0.0 to 1.0 for UI
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PruvulazzuAudioProcessor)
 };
