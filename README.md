@@ -47,5 +47,5 @@ make
 - [ ] Add more sample formats support
 - [ ] Write unit tests
 - [x] Documentation
-- [ ] Grain logic optimization and improvements
-- [ ] Better visualization of grains in the waveform display (maybe small windows or clear markers)
+- [Partial] Grain logic optimization and improvements
+- [Partial] Better visualization of grains in the waveform display (maybe small windows or clear markers)
