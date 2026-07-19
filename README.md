@@ -41,11 +41,20 @@ make
 ## TODO
 - [ ] Add more DSP features (LFO, Envelopes, etc.)
 - [ ] Improve UI/UX design (Visualization of grains, better controls)
+  - [ ] Implement better sectioning and separation of the UI elements for better user experience
+  - [ ] Tabs for different sections of the plugin (e.g., sample loading, grain parameters, effects) 
 - [ ] Add more controls for grain parameters (density, spread, etc.)
+  - [ ] Add support for real-time pitch shifting
+  - [ ] Implement start and end point controls for grains(with also visualization in the waveform display)
 - [ ] MIDI learn functionality
 - [ ] Implement preset management system
 - [ ] Add more sample formats support
 - [ ] Write unit tests
 - [x] Documentation
-- [Partial] Grain logic optimization and improvements
-- [Partial] Better visualization of grains in the waveform display (maybe small windows or clear markers)
+- [ ] Grain logic optimization and improvements
+  - [X] Implement grain logic directly in DSP module
+  - [X] Optimize grain scheduling and playback
+  - [ ] Implement optimization and improvements for grain playback and scheduling
+- [ ] Better visualization of grains in the waveform display (maybe small windows or clear markers)
+  - [X] Implement basic visualization of grains in the waveform display
+  - [ ] Implement more advanced visualization of grains in the waveform display (e.g., small windows or clear markers)
