@@ -1,7 +1,9 @@
 # Pruvulazzu
-Granular sampler plugin implemented in C++ and Juce. Support both LV2 and VST. Under production
+Granular sampler plugin implemented in C++ and Juce. Supports both LV2 and VST. Under production.
 
-Drag and drop samples to play them granually with MIDI.
+Drag and drop samples to play them granually with MIDI. After building the plugin, you can find the LV2 version in `build/Pruvulazzu.lv2` and the VST version in `build/Pruvulazzu.vst3`. The plugin is still under development, so expect some bugs and missing features.
+
+VST3 version is tested on Linux with Ardour and seem to work fine. LV2 version seem to have some issues with the UI. So if you want to use the plugin, I recommend using the VST3 version for now.
 
 ## Name origin
 Pruvulazzu means "dust" or "small particles" in sicilian. The sicilian undertones of this plugin will probably be coded as well in the UI in the future.
