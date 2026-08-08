@@ -10,7 +10,10 @@ PruvulazzuAudioProcessor::PruvulazzuAudioProcessor()
     : AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
       apvts (*this, nullptr, "Parameters", {
           std::make_unique<juce::AudioParameterFloat> ("density", "Density (Hz)", 1.0f, 100.0f, 20.0f),
-          std::make_unique<juce::AudioParameterFloat> ("size", "Grain Size (ms)", 10.0f, 1000.0f, 150.0f)
+          std::make_unique<juce::AudioParameterFloat> ("size", "Grain Size (ms)", 10.0f, 1000.0f, 150.0f),
+          // Normalized start/end parameters (0.0 = beginning of file, 1.0 = end)
+          std::make_unique<juce::AudioParameterFloat> ("start", "Start", 0.0f, 1.0f, 0.0f),
+          std::make_unique<juce::AudioParameterFloat> ("end", "End", 0.0f, 1.0f, 1.0f)
       })
 {
     formatManager.registerBasicFormats();
