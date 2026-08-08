@@ -32,6 +32,28 @@ PruvulazzuAudioProcessorEditor::PruvulazzuAudioProcessorEditor(PruvulazzuAudioPr
     sizeLabel.attachToComponent(&sizeSlider, false); // false = place above the slider
     addAndMakeVisible(sizeLabel);
 
+    // --- Start Knob & Label ---
+    startSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    startSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    addAndMakeVisible(startSlider);
+    startAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts, "start", startSlider);
+    
+    startLabel.setText("Start", juce::dontSendNotification);
+    startLabel.setJustificationType(juce::Justification::centred);
+    startLabel.attachToComponent(&startSlider, false); 
+    addAndMakeVisible(startLabel);
+
+    // --- End Knob & Label ---
+    endSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    endSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    addAndMakeVisible(endSlider);
+    endAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts, "end", endSlider);
+    
+    endLabel.setText("End", juce::dontSendNotification);
+    endLabel.setJustificationType(juce::Justification::centred);
+    endLabel.attachToComponent(&endSlider, false); 
+    addAndMakeVisible(endLabel);
+
     testButton.onClick = [this] { processor.triggerTestNote(); };
 
     startTimerHz(60);
@@ -47,25 +69,34 @@ void PruvulazzuAudioProcessorEditor::paint(juce::Graphics& g) {
 void PruvulazzuAudioProcessorEditor::resized() {
     auto bounds = getLocalBounds().reduced(10);
     
-    // Bottom 80 pixels for controls
-    auto controlArea = bounds.removeFromBottom(80);
+    // Bottom 110 pixels for controls
+    auto controlArea = bounds.removeFromBottom(110);
     bounds.removeFromBottom(10); // Spacing between waveform and controls
     
     waveformVisualizer.setBounds(bounds);
     
     // Layout controls horizontally
-    int knobWidth = 80;
-    densitySlider.setBounds(controlArea.removeFromLeft(knobWidth));
-    sizeSlider.setBounds(controlArea.removeFromLeft(knobWidth));
+    int knobWidth = 70;
+    auto knobArea = controlArea.withTrimmedTop(10).withTrimmedBottom(10); // Add some vertical padding
+    densitySlider.setBounds(knobArea.removeFromLeft(knobWidth));
+    sizeSlider.setBounds(knobArea.removeFromLeft(knobWidth));
+    startSlider.setBounds(knobArea.removeFromLeft(knobWidth));
+    endSlider.setBounds(knobArea.removeFromLeft(knobWidth));
+
+    // densitySlider.setBounds(controlArea.removeFromLeft(knobWidth));
+    // sizeSlider.setBounds(controlArea.removeFromLeft(knobWidth));
     
     testButton.setBounds(controlArea.removeFromRight(100).withSizeKeepingCentre(100, 40));
 }
 
 void PruvulazzuAudioProcessorEditor::timerCallback() {
-    auto currentData = processor.getSampleManager().getCurrentBuffer();
-    int totalLen = (currentData != nullptr) ? currentData->getBuffer().getNumSamples() : 0;
-    // We need a helper in Processor to get the positions from grainEngine
     waveformVisualizer.setPlayheads(processor.getActiveGrainPositions());
+    
+    // Fetch the current Start and End knob values from the processor
+    float start = processor.apvts.getRawParameterValue("start")->load();
+    float end = processor.apvts.getRawParameterValue("end")->load();
+    
+    waveformVisualizer.setRange(start, end);
 }
 
 bool PruvulazzuAudioProcessorEditor::isInterestedInFileDrag(const juce::StringArray&) { return true; }

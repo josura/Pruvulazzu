@@ -19,6 +19,14 @@ public:
         repaint();
     }
 
+    void setRange(float start, float end) {
+        if (start != startRange || end != endRange) {
+            startRange = start;
+            endRange = end;
+            repaint();
+        }
+    }
+
     // void paint(juce::Graphics& g) override {
     //     g.fillAll(juce::Colours::black);
     //     g.setColour(juce::Colours::cyan);
@@ -39,6 +47,18 @@ public:
             g.drawText("Drop an audio file here", getLocalBounds(), juce::Justification::centred);
         }
 
+        // Draw active region range (Start/End)
+        g.setColour(juce::Colours::white.withAlpha(0.3f)); // Semi-transparent yellow
+        auto startX = startRange * getWidth();
+        auto endX = endRange * getWidth();
+        g.fillRect(startX, 0.0f, endX - startX, (float)getHeight());
+
+        // Draw the boundaries of the active region (green for start, red for end)
+        g.setColour(juce::Colours::green);
+        g.drawLine(startX, 0, startX, getHeight(), 2.0f);
+        g.setColour(juce::Colours::red);
+        g.drawLine(endX, 0, endX, getHeight(), 2.0f);
+
         // Draw the "Dust" (Multiple Playheads), to be tested
         // g.setColour(juce::Colours::white.withAlpha(0.6f)); // Semi-transparent
         g.setColour(juce::Colours::white); // Opaque for testing
@@ -54,4 +74,6 @@ private:
     std::vector<float> currentPositions;
     juce::AudioThumbnailCache thumbnailCache{ 5 };
     juce::AudioThumbnail thumbnail;
+    float startRange = 0.0f;
+    float endRange = 1.0f;
 };
