@@ -44,24 +44,24 @@ void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     int totalSamples = currentData->getBuffer().getNumSamples();
 
-    // 1. TEST BUTTON LOGIC: One Macro Grain
+    // Test button logic: One Macro Grain
     if (noteTriggered.exchange(false)) {
         // Play the entire sample as one singular grain
         grainEngine.triggerGrain(0, totalSamples, 0.5f, activeEnvelope.get());
     }
 
-    // 2. MIDI LOGIC: Turn granular cloud on/off
+    // Midi logic: Turn granular cloud on/off
     for (const auto metadata : midiMessages) {
         auto msg = metadata.getMessage();
         if (msg.isNoteOn()) isNoteActive = true;
         else if (msg.isNoteOff()) isNoteActive = false;
     }
 
-    // 3. GRANULAR SCHEDULER
+    // Granular scheduler logic: Trigger grains based on density parameter
     if (isNoteActive) {
         float density = apvts.getRawParameterValue("density")->load();
         
-        // Fix: Density is grains per second. Interval = SampleRate / Density
+        // Density is grains per second. Interval = SampleRate / Density
         int intervalSamples = static_cast<int>(getSampleRate() / density);
         
         samplesSinceLastGrain += buffer.getNumSamples();
@@ -69,6 +69,11 @@ void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             float sizeMs = apvts.getRawParameterValue("size")->load();
             int len = static_cast<int>((sizeMs / 1000.0f) * getSampleRate());
             
+            // get normalized start and end positions
+            float startNorm = apvts.getRawParameterValue("start")->load();
+            float endNorm = apvts.getRawParameterValue("end")->load();
+            if (startNorm > endNorm) std::swap(startNorm, endNorm); // Ensure start <= end
+
             // Ensure grain doesn't exceed sample boundaries
             if (len > totalSamples) len = totalSamples;
             int start = 0;
