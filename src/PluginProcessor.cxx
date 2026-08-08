@@ -74,14 +74,20 @@ void PruvulazzuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
             float endNorm = apvts.getRawParameterValue("end")->load();
             if (startNorm > endNorm) std::swap(startNorm, endNorm); // Ensure start <= end
 
-            // Ensure grain doesn't exceed sample boundaries
-            if (len > totalSamples) len = totalSamples;
-            int start = 0;
-            if (totalSamples > len) {
-                start = juce::Random::getSystemRandom().nextInt(totalSamples - len);
+            // Compute actual sample positions based on normalized values
+            int startSample = static_cast<int>(startNorm * totalSamples);
+            int endSample = static_cast<int>(endNorm * totalSamples);
+
+            // Ensure the grain fully fits inside the end boundary
+            int maxStart = endSample - len;
+            if (maxStart < startSample) maxStart = startSample; // Fallback if size is larger than the window
+            
+            int spawnPos = startSample;
+            if (maxStart > startSample) {
+                spawnPos = startSample + juce::Random::getSystemRandom().nextInt(maxStart - startSample + 1);
             }
             
-            grainEngine.triggerGrain(start, len, 0.5f, activeEnvelope.get());
+            grainEngine.triggerGrain(spawnPos, len, 0.5f, activeEnvelope.get());
             samplesSinceLastGrain -= intervalSamples; // Subtract instead of reset to 0 to keep precise timing
         }
     }
