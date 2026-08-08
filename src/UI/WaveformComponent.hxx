@@ -47,17 +47,26 @@ public:
             g.drawText("Drop an audio file here", getLocalBounds(), juce::Justification::centred);
         }
 
+        // Get actual start and end positions
+        // Ensure actualStart is always the smaller number
+        float actualStart = std::min(startRange, endRange);
+        float actualEnd = std::max(startRange, endRange);
+
         // Draw active region range (Start/End)
         g.setColour(juce::Colours::white.withAlpha(0.3f)); // Semi-transparent yellow
-        auto startX = startRange * getWidth();
-        auto endX = endRange * getWidth();
+        auto startX = actualStart * getWidth();
+        auto endX = actualEnd * getWidth();
         g.fillRect(startX, 0.0f, endX - startX, (float)getHeight());
 
         // Draw the boundaries of the active region (green for start, red for end)
-        g.setColour(juce::Colours::green);
-        g.drawLine(startX, 0, startX, getHeight(), 2.0f);
-        g.setColour(juce::Colours::red);
-        g.drawLine(endX, 0, endX, getHeight(), 2.0f);
+        float knobStartX = startRange * getWidth();
+        float knobEndX = endRange * getWidth();
+
+        g.setColour(juce::Colours::lightgreen);
+        g.drawLine(knobStartX, 0, knobStartX, getHeight(), 2.0f);
+        
+        g.setColour(juce::Colours::indianred);
+        g.drawLine(knobEndX, 0, knobEndX, getHeight(), 2.0f);
 
         // Draw the "Dust" (Multiple Playheads), to be tested
         // g.setColour(juce::Colours::white.withAlpha(0.6f)); // Semi-transparent
